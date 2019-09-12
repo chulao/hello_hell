@@ -24,5 +24,21 @@ fn main() {
 
   // Print a hello
   println!("Give hello {} for {} times", name, total);
+}
 
+
+#[cfg(test)]
+mod tests {
+  // Note this useful idiom: importing names from outer (for mod tests) scope.
+  use super::*;
+
+  #[test]
+  fn test_sum() {
+    assert_eq!(sum(1, 2), 3);
+  }
+
+  #[test]
+  fn test_sum_with_negative_value() {
+    assert_eq!(sum(3, -5), -2);
+  }  
 }
