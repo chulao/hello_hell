@@ -1,3 +1,11 @@
+/*
+ * Rust hello world
+ */
+
+// Main function
 fn main() {
-  println!("Hello World");
+  // Define the name
+  let name = "World !";
+
+  println!("Hello {}", name);
 }
