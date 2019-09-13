@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["chulao"]
 
 [dependencies]
+simple_logger = "1.3.0"
+log = "0.4"
