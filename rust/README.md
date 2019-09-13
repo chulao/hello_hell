@@ -6,7 +6,7 @@
 
 To build: `cargo build`
 To test: `cargo test`
-To run: `./target/debug/hello`
+To run: `cargo run` or `./target/debug/hello`
 
 
 ## References
