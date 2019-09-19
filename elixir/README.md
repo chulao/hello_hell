@@ -1,12 +1,13 @@
-# Running `hello_world`
-
-- Inside `hello_world` Directory: `elixir hello_world.exs`
-
 # References
+
+### DONE:
 
 ![Installing](https://elixir-lang.org/install.html)
 ![Basics](https://elixir-lang.org/getting-started/introduction.html)
 ![Generating docs](https://elixirschool.com/pt/lessons/basics/documentation/)
+
+### TO-DO:
+
 ![Testing](https://elixirschool.com/pt/lessons/basics/testing/)
 ![Error handling](https://elixirschool.com/pt/lessons/advanced/error-handling/)
 ![Phoenix Installation](https://hexdocs.pm/phoenix/installation.html)
