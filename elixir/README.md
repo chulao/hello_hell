@@ -1,13 +1,13 @@
-# References
+# Index
 
-### DONE:
+- Hello World: `hello_world/`
+- Generating Documentation: `generate_docs/`
+
+# References
 
 - ![Installing](https://elixir-lang.org/install.html)
 - ![Basics](https://elixir-lang.org/getting-started/introduction.html)
-- ![Generating docs](https://elixirschool.com/pt/lessons/basics/documentation/)
-
-### TO-DO:
-
+- ![Generating Documentation](https://elixirschool.com/pt/lessons/basics/documentation/)
 - ![Testing](https://elixirschool.com/pt/lessons/basics/testing/)
 - ![Error handling](https://elixirschool.com/pt/lessons/advanced/error-handling/)
 - ![Phoenix Installation](https://hexdocs.pm/phoenix/installation.html)
