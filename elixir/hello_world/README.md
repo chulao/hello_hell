@@ -1,3 +1,3 @@
-# Running `hello_world`
+# Running
 
-- Inside `hello_world` Directory: `elixir hello_world.exs`
+- `elixir hello_world.exs`
