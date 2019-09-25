@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style type="text/css" media="screen">
+.help-block {
+  font-style: italic;
+  font-size: 80%;
+}
+
+.alert, .hide {
+  display: none;
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div id="alert_panel" class="alert alert-warning alert-dismissible" role="alert">
+  <p class="alert-message"></p>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form id="simple_form" class="form-horizontal" action="http://localhost:8000/user" method="post">
+  <fieldset>
+  <!-- Form Name -->
+  <legend>Company</legend>
+
+  <!-- Text input-->
+  <div class="form-group">
+    <label class="col-md-2 control-label" for="email">Email</label>  
+    <div class="col-md-12">
+      <input id="email" name="email" type="email" placeholder="" class="form-control input-md" required>
+      <span class="help-block">Provide your e-mail for contact</span>
+      <div class="text-danger hide">
+        <small>Provide your e-mail for contact</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text input-->
+  <div class="form-group">
+    <label class="col-md-2 control-label" for="fullname">Name</label>  
+    <div class="col-md-12">
+      <input id="fullname" name="fullname" type="text" placeholder="Your full name" class="form-control input-md" required>
+      <div class="text-danger hide">
+        <small>Please inform your full name</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text input-->
+  <div class="form-group">
+    <label class="col-md-2 control-label" for="phone">Phone</label>  
+    <div class="col-md-12">
+      <input id="phone" name="phone" type="text" placeholder="(00) 00000-0000" class="form-control input-md" required>
+      <div class="text-danger hide">
+        <small>Please provide your phone</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Button -->
+  <div class="form-group">
+    <!-- <label class="col-md-2 control-label" for="submit">Submit</label> -->
+    <div class="col-md-12">
+      <button id="cancel" name="cancel" class="btn btn-link">Cancel</button>
+      <button id="submit" name="submit" class="btn btn-success">Submit</button>
+    </div>
+  </div>
+
+  </fieldset>
+</form>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+
+<script>
+var constraints = {
+  email: {
+    email: true
+  },
+  fullname: {
+    length: {
+      minimum: 3,
+      message: "must be at least 3 characters"
+    }
+  },
+  phone: {
+    // presence: true,
+    format: /\(\d{2}\)\s\d{5}\-\d{4}/,
+    // message: "please provide the phone as (00) 00000-0000"   
+  }
+};
+
+function emailIsValid (email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+var PhoneMaskBehavior = function (val) {
+  return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+}, PhoneMaskOptions = { /* new variable */ 
+  onKeyPress: function(val, e, field, options) {
+    field.mask(PhoneMaskBehavior.apply({}, arguments), options);
+  }
+};
+
+function show_alert(message) {
+  console.log("Alert message:", message);
+  $(".alert-message").html(message);
+  $("#alert_panel").show();
+}
+
+function remove_field_error(id) {
+  return function(event) {
+    let error = $("#" + id + " ~ div.text-danger");
+    if (! error.hasClass("hide")) { // Is on
+      let field_to_verify = {};
+      field_to_verify[id] = this.value;
+
+      let constraint = validate(field_to_verify, constraints);
+
+      if (! constraint) {
+        error.addClass("hide");
+      }
+    }
+  }
+}
+
+function clear_field_error(id) {
+  let error = $("#" + id + " ~ div.text-danger");
+  error.addClass("hide");
+}
+
+$(document).ready(function(){
+  $("#email").on("input", remove_field_error("email"));
+  $("#fullname").on("input", remove_field_error("fullname"));
+  $("#phone").on("input", remove_field_error("phone"));
+
+  $("#email").mask("A", {
+    translation: {
+      "A": { pattern: /[\w@\-.+]/, recursive: true }
+    }
+  });
+
+  // $("#phone").mask("#0000-0000");
+  $("#phone").mask(PhoneMaskBehavior, PhoneMaskOptions);
+
+  $("#simple_form").on("submit", function(event) {
+    console.log("Form validating...");
+    let _form = $("#simple_form");
+
+    ["email", "fullname", "phone"].map(clear_field_error);
+
+    let constraint = validate({email: $("#email").val(), fullname: $("#fullname").val(), phone: $("#phone").val()}, constraints);
+    if (constraint) {
+      console.log("Form constraint failed");
+      Object.keys(constraint).map(function(field_id) {
+        let error = $("#" + field_id + " ~ div.text-danger");
+        error.removeClass("hide");
+        console.log(`Invalid field: ${field_id}: ${constraint[field_id][0]}`);
+      });
+
+      show_alert("Please verify the incorrect fields");
+
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+  });
+});
+</script>
+{% endblock %}
