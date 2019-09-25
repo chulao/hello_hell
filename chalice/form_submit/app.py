@@ -1,5 +1,7 @@
 from os import environ
 from urllib.parse import parse_qs
+import json
+import csv
 
 from chalice import Chalice, Response
 from chalice import BadRequestError
@@ -16,7 +18,13 @@ def get_app_db():
   if _DB is None:
     table_name = environ['TABLE_NAME']
     if table_name == 'InMemory':
-      _DB = InMemoryDB({'user': {'test@test.com': {'email': 'test@test.com', 'fullname': 'Test', 'phone': '(11) 12345-1234'}}})
+      _DB = InMemoryDB({
+        'user': {
+          'test1@test.com': {'email': 'test1@test.com', 'fullname': 'Test1', 'phone': '(11) 12345-1111'},
+          'test2@test.com': {'email': 'test2@test.com', 'fullname': 'Test2', 'phone': '(11) 12345-2222'},
+          'test3@test.com': {'email': 'test3@test.com', 'fullname': 'Test3', 'phone': '(11) 12345-3333'},
+        }
+      })
     else:
       _DB = DynamoDB(table_name)
   return _DB
@@ -36,7 +44,21 @@ def index():
   return Response(template, status_code=200, headers={'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
 
 
-@app.route('/user', methods=['POST'], content_types=['application/x-www-form-urlencoded', 'application/json'], cors=True)
+@app.route('/users', methods=['GET'], cors=True)
+def list_users():
+  response_type = app.current_request.query_params['type'] if app.current_request.query_params and 'type' in app.current_request.query_params else 'json'
+  app.log.debug('List users in {} format'.format(response_type))
+  users = get_app_db().list()
+  if response_type == 'json':
+    data = json.dumps(list(users))
+  else:
+    data = ';'.join(list(users)[0].keys()) + '\n'
+    for user in list(users):
+      data = data + ';'.join(user.values()) + '\n'
+  return data
+
+
+@app.route('/users', methods=['POST'], content_types=['application/x-www-form-urlencoded', 'application/json'], cors=True)
 def create_user():
   app.log.debug("Creating user")
   user = {}

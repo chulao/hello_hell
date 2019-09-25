@@ -20,12 +20,16 @@ class Data(object):
 
 
 
+
 class UserData(object):
   def get(self, email):
     pass
 
   def save(self, data):
     pass
+
+  def list(self):
+    pass;
 
 
 
@@ -50,11 +54,14 @@ class InMemoryDB(UserData):
       self._state['user'] = {}
     self._state['user'][data['email']] = data
 
+  def list(self):
+    return self._state.get('user', {}).values()
 
 
 class DynamoDB(UserData):
   def __init__(self, table_name):
     dynamodb = boto3.resource("dynamodb")
+    self._table_name = table_name
     self._table = dynamodb.Table(table_name)
 
   def get(self, email):
@@ -67,3 +74,7 @@ class DynamoDB(UserData):
 
   def save(self, data):
     self._table.put_item(Item=data)
+
+  def list_items(self):
+    response = self._table.scan()
+    return response['Items']
