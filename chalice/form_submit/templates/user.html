@@ -40,11 +40,11 @@
 
   <!-- Text input-->
   <div class="form-group">
-    <label class="col-md-2 control-label" for="fullname">Name</label>  
+    <label class="col-md-2 control-label" for="username">Name</label>  
     <div class="col-md-12">
-      <input id="fullname" name="fullname" type="text" placeholder="Your full name" class="form-control input-md" required>
+      <input id="username" name="username" type="text" placeholder="Your full name" class="form-control input-md" required>
       <div class="text-danger hide">
-        <small>Please inform your full name</small>
+        <small>Please inform your full name (minimum length of 3)</small>
       </div>
     </div>
   </div>
@@ -55,7 +55,7 @@
     <div class="col-md-12">
       <input id="phone" name="phone" type="text" placeholder="(00) 00000-0000" class="form-control input-md" required>
       <div class="text-danger hide">
-        <small>Please provide your phone</small>
+        <small>Please provide your phone on format (00) 00000-0000</small>
       </div>
     </div>
   </div>
@@ -83,7 +83,7 @@ var constraints = {
   email: {
     email: true
   },
-  fullname: {
+  username: {
     length: {
       minimum: 3,
       message: "must be at least 3 characters"
@@ -137,7 +137,7 @@ function clear_field_error(id) {
 
 $(document).ready(function(){
   $("#email").on("input", remove_field_error("email"));
-  $("#fullname").on("input", remove_field_error("fullname"));
+  $("#username").on("input", remove_field_error("username"));
   $("#phone").on("input", remove_field_error("phone"));
 
   $("#email").mask("A", {
@@ -153,9 +153,9 @@ $(document).ready(function(){
     console.log("Form validating...");
     let _form = $("#simple_form");
 
-    ["email", "fullname", "phone"].map(clear_field_error);
+    ["email", "username", "phone"].map(clear_field_error);
 
-    let constraint = validate({email: $("#email").val(), fullname: $("#fullname").val(), phone: $("#phone").val()}, constraints);
+    let constraint = validate({email: $("#email").val(), username: $("#username").val(), phone: $("#phone").val()}, constraints);
     if (constraint) {
       console.log("Form constraint failed");
       Object.keys(constraint).map(function(field_id) {

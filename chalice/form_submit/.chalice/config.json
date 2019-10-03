@@ -5,14 +5,11 @@
     "dev": {
       "api_gateway_stage": "api",
       "environment_variables": {
-        "TABLE_NAME": "InMemory"
+        "USERS_TABLE_NAME": "form_submit-users_dev-922a869c-b7d7-4527-9306-ecb647ab55b0"
       }
     },
     "prod": {
-      "api_gateway_stage": "api",
-      "environment_variables": {
-        "TABLE_NAME": "User"
-      }
+      "api_gateway_stage": "api"
     }
   }
 }

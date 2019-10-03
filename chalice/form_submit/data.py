@@ -1,4 +1,6 @@
 from urllib.parse import parse_qs
+from uuid import uuid4
+
 import boto3
 
 
@@ -70,11 +72,18 @@ class DynamoDB(UserData):
         'email': email,
       },
     )
-    return response['Item']
+    return response['Items']
 
   def save(self, data):
-    self._table.put_item(Item=data)
+    uid = str(uuid4())
+    self._table.put_item(Item={
+      'email': data['email'],
+      'uid': uid,
+      'username': data['username'],
+      'phone': data['phone']
+    })
+    return uid
 
-  def list_items(self):
+  def list(self):
     response = self._table.scan()
     return response['Items']

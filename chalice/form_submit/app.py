@@ -11,18 +11,20 @@ from templates import render
 
 
 app = Chalice(app_name='form_submit')
+app.debug = True
+
 _DB = None
 
 def get_app_db():
   global _DB
   if _DB is None:
-    table_name = environ['TABLE_NAME']
+    table_name = environ['USERS_TABLE_NAME']
     if table_name == 'InMemory':
       _DB = InMemoryDB({
         'user': {
-          'test1@test.com': {'email': 'test1@test.com', 'fullname': 'Test1', 'phone': '(11) 12345-1111'},
-          'test2@test.com': {'email': 'test2@test.com', 'fullname': 'Test2', 'phone': '(11) 12345-2222'},
-          'test3@test.com': {'email': 'test3@test.com', 'fullname': 'Test3', 'phone': '(11) 12345-3333'},
+          'test1@test.com': {'email': 'test1@test.com', 'username': 'Test1', 'phone': '(11) 12345-1111'},
+          'test2@test.com': {'email': 'test2@test.com', 'username': 'Test2', 'phone': '(11) 12345-2222'},
+          'test3@test.com': {'email': 'test3@test.com', 'username': 'Test3', 'phone': '(11) 12345-3333'},
         }
       })
     else:
@@ -33,7 +35,7 @@ def get_app_db():
 def read_user(data):
   user = {}
   data.read(user, 'email')
-  data.read(user, 'fullname')
+  data.read(user, 'username')
   data.read(user, 'phone')
   return user
 
@@ -52,8 +54,9 @@ def list_users():
   if response_type == 'json':
     data = json.dumps(list(users))
   else:
-    data = ';'.join(list(users)[0].keys()) + '\n'
-    for user in list(users):
+    users = list(map(lambda user: {k: user[k] for k in user if k not in ['uid']}, users))
+    data = ';'.join(users[0].keys()) + '\n'
+    for user in users:
       data = data + ';'.join(user.values()) + '\n'
   return data
 
@@ -61,25 +64,25 @@ def list_users():
 @app.route('/users', methods=['POST'], content_types=['application/x-www-form-urlencoded', 'application/json'], cors=True)
 def create_user():
   app.log.debug("Creating user")
-  user = {}
+  user_data = {}
 
   if ('content-type' in app.current_request.headers) :
     content_type = app.current_request.headers['content-type']
     if content_type == 'application/json':
-      user = read_user(Data(app))
+      user_data = read_user(Data(app))
     else: 
-      user = read_user(Data(app, True))
+      user_data = read_user(Data(app, True))
   else:
-      user = read_user(Data(app))
+      user_data = read_user(Data(app))
 
-  record = get_app_db().get(user['email'])
+  record = get_app_db().save(user_data)
 
   if record:
+    template = render('./templates/success.html', {'uid': record})
+    return Response(template, status_code=200, headers={'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+  else:
     template = render('./templates/error.html', {})
     return Response(template, status_code=409, headers={'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-  else:
-    template = render('./templates/success.html', {})
-    return Response(template, status_code=200, headers={'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
 
 
 
